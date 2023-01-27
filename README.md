@@ -73,6 +73,11 @@ ds_static:
   reporter_make: verbose_positives # do not display skipped targets
 ```
 
+## Packages needed
+
+Those demos are using several packages, you can get the necessary ones by using [`renv`]()
+
+
 ## One file, linear pipeline
 
 Using the original tsv from the package `datasauRus` itself. `targets` allows to track the timestamp of an URL.
@@ -97,6 +102,9 @@ Sys.setenv(TAR_PROJECT = "ds_linear")
 # Run what is needed like make in a Makefile
 targets::tar_make()
 ```
+
+The GIF animation takes roughly one minute, so it would be cumbersome to wait this time at each Rmarkdown knitting process.
+It is a good case for `targets`, the GIF will be re-run only if needed while you polish the Rmd report.
 
 ## One folder, dynamic branching
 
