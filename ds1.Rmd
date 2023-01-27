@@ -1,0 +1,71 @@
+---
+title: "Datasaurus, one file"
+output: 
+  html_document:
+    theme: cosmo
+date: "7th February 2023"
+---
+
+```{r}
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(targets)
+# We specify we will use the project ds_linear which 
+# correspond to the target file: _targets_ds_1.R and store `_ds_1/` (config: `_targets.yaml`)
+Sys.setenv(TAR_PROJECT = "ds_linear")
+```
+
+## Literate programming using targets
+
+Read more in [William Landau](https://wlandau.github.io/about.html) `targets` [manual](https://books.ropensci.org/targets/literate-programming.html).
+
+Dependencies of this Rmakrdown document are based on the parsing of the `tar_read()` and `tar_load()` calls within it.
+
+### Tibble
+
+- `tar_load()` read the target (by default a `rds` saved object) and load it in the GlobalEnv with the target name.
+- `tar_read()` only reads the targets and returns it. No assignment is made.
+
+```{r}
+tar_load(ds)
+ds
+```
+
+### Compute summary statistics
+
+
+```{r}
+ds |> 
+  group_by(dataset) |>
+  summarise(across(c(x, y), list(mean = mean, sd = sd)))
+```
+
+
+
+### Facet plot
+
+```{r}
+#| fig-height: 10
+#| fig-width: 8
+tar_read(all_facets)
+```
+
+### Animation
+
+```{r}
+#| echo: false
+knitr::include_graphics(tar_read(gif))
+```
+
+
+### Directed Acyclic Graph
+
+Show dependencies, optionally with the time it took to build and disk space used.
+
+```{r}
+tar_visnetwork(label = c("time", "size"))
+```
+
+

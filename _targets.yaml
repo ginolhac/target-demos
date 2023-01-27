@@ -1,0 +1,11 @@
+ds_linear:
+  store: _ds_1
+  script: _targets_ds_1.R
+ds_dynamic:
+  store: _ds_2
+  script: _targets_ds_2.R
+ds_static:
+  store: _ds_3
+  script: _targets_ds_3.R
+  reporter_make: verbose_positives # do not display skipped targets
+  

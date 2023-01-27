@@ -1,0 +1,134 @@
+---
+title: "Datasaurus, static and dynamic branching"
+output: 
+  html_document:
+    theme: cosmo
+date: "7th February 2023"
+---
+
+```{r}
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(targets)
+Sys.setenv(TAR_PROJECT = "ds_static")
+```
+
+
+### Text files
+
+
+We created a folder structure as we often have to deal with, 3 sub-folders of data:
+
+```
+circles
+├── dset_2.tsv
+└── dset_3.tsv
+lines
+├── dset_11.tsv
+├── dset_12.tsv
+├── dset_13.tsv
+├── dset_6.tsv
+├── dset_7.tsv
+├── dset_8.tsv
+└── dset_9.tsv
+others
+├── dset_10.tsv
+├── dset_1.tsv
+├── dset_4.tsv
+└── dset_5.tsv
+```
+
+We want to keep the same treatment for the 3 groups but named clearly along the pipeline. 
+
+### How static branching works
+
+[`tar_manifest()`](https://docs.ropensci.org/targets/reference/tar_manifest.html) display the command **to be run**.
+For static branching, since we have explicit names, it is worth looking at what the plan is.
+
+Since we have several number of files (2, 4 or 7) per group (**circles**, **lines**, **others**) _dynamic_ branching is used within the static one.
+
+```{r}
+tar_manifest() |> 
+  rmarkdown::paged_table()
+```
+
+
+For this last demo, we chose to have a less verbose `tar_make()`: **verbose_positives**, _i. e_ show only what is re-reun. 
+The chosen [**reporter**](https://docs.ropensci.org/targets/reference/tar_make.html) by default shows all targets, for example:
+
+
+```
+✔ skip target files_circles
+✔ skip target files_others
+✔ skip target files_lines
+✔ skip branch ds_circles_a21af8f2
+✔ skip branch ds_circles_cc1c954b
+[...]
+✔ skip branch summary_stat_lines_4f09e3f8
+✔ skip pattern summary_stat_lines
+✔ skip target patch_plots_circles
+✔ skip target patch_plots_others
+✔ skip target patch_plots_lines
+✔ skip target stat_summaries
+✔ skip target plots_agg
+✔ skip target report
+✔ skip pipeline [0.399 seconds]
+```
+
+- In contrast, **verbose_positives** would display for re-running only the `report`:
+
+```
+> tar_make()
+• start target report
+• built target report [6.471 seconds]
+• end pipeline [7.723 seconds]
+```
+
+- **summary**, is anthoner compact option:
+
+```
+queue | skip | start | built | error | warn | cancel |        time
+    0 |   48 |     0 |     0 |     0 |    0 |      0 | 14:40 08.52 
+```
+
+
+### Summary stats combined
+
+```{r}
+tar_read(stat_summaries)
+```
+
+
+### Patchwork for lines
+
+Seven dataset appear as **lines** and were tagged as such. Here is the patchwork of the 7 plots:
+
+```{r}
+tar_read(patch_plots_lines)
+```
+
+
+
+### Patchwork of patchwork
+
+We combined the 3 patchwork into one final plot.
+
+
+```{r}
+#| fig-height: 10
+#| fig-width: 11
+tar_read(plots_agg)
+```
+
+
+### Directed Acyclic Graph
+
+Show dependencies, with the explicit names. We can show only the targets to simplify the DAG.
+
+```{r}
+tar_visnetwork(targets_only = TRUE, label = c("branches"))
+```
+
+

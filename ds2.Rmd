@@ -1,0 +1,88 @@
+---
+title: "Datasaurus, dynamic branching"
+output: 
+  html_document:
+    theme: cosmo
+date: "7th February 2023"
+---
+
+```{r}
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(targets)
+# We specify we will use the project ds_dynamic which 
+# correspond to the target file: _targets_ds_2.R and store `_ds_2/` (config: `_targets.yaml`)
+Sys.setenv(TAR_PROJECT = "ds_dynamic")
+```
+
+
+### Input files
+
+13 tabulated-separated-values to read from one folder `data`:
+
+```{r}
+tar_read(dset) |> 
+  enframe()
+```
+
+Dynamic branches create hash names, we will explore [static branching](https://books.ropensci.org/targets/static.html) to get meaningful branch names.
+
+
+### Tibble
+
+
+After the 13 files were read with [dynamic branching](https://books.ropensci.org/targets/dynamic.html), the _magic_ aggregation (like `bind_rows()`) is done by simply calling the target **name**.
+
+This is done by `iteration = "vector"` in `tar_target()` b(the default value).
+
+```{r}
+tar_read(ds)
+```
+
+
+Individual tibble can be retrieved by `branches`
+
+```{r}
+# Only the 'star' dataset 
+tar_read(ds, branches = 2L)
+```
+
+
+### Plots
+
+Individual plot, `tar_read()` but iteration had to be `list` since `ggplot` object cannot be bundled as tibbles or atomic elements. 
+
+```{r}
+tar_read(plots, branches = 2L)
+```
+
+
+Then you can use the **list** `plots` to make one figure with [`patchwork`](https://patchwork.data-imaginist.com/)
+
+- Recursively change the `theme` of all plot
+- Add a main title
+
+```{r}
+#| fig-height: 10
+#| fig-width: 11
+library(patchwork)
+wrap_plots(tar_read(plots)) +
+   plot_annotation(title = "13 datasets bundled with patchwork") & theme_void()
+```
+
+
+
+### Directed Acyclic Graph
+
+Show dependencies, optionally with the time it took to build and number of branches.
+
+It all appears as outdated since `tar_files()` is agnostic to the files to explore, meaning this target is executed each time.
+For comparison, you can use `tar_files_input()` when files are **already** present as explained [in the docs](https://docs.ropensci.org/tarchetypes/reference/tar_files_input.html#details).
+
+```{r}
+tar_visnetwork(label = c("time", "branches"))
+```
+
+
