@@ -21,7 +21,7 @@ Sys.setenv(TAR_PROJECT = "ds_linear")
 
 Read more in [William Landau](https://wlandau.github.io/about.html) `targets` [manual](https://books.ropensci.org/targets/literate-programming.html).
 
-Dependencies of this Rmakrdown document are based on the parsing of the `tar_read()` and `tar_load()` calls within it.
+Dependencies of this Rmarkdown document are based on the parsing of the `tar_read()` and `tar_load()` calls within it.
 
 ### Tibble
 

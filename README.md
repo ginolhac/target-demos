@@ -48,11 +48,55 @@ For each the 3 demos, we use different versions of the same data:
 - Three folders of 2, 4 and 7 tsv of 143 lines each
 
 
+## Multiple projects in one folder
+
+This is supported by `targets` and described in the [manual: projects](https://books.ropensci.org/targets/projects.html).
+A config YAML file, `_targets.yaml` describe the 3 different projects, specifying the name of both:
+
+- the `targets` R script (actual definition of `target`)
+- the store folder name (where objects are cached and described)
+
+Additional options or inheritance can be specified too. 
+
+Content:
+
+``` yaml
+ds_linear:
+  store: _ds_1
+  script: _targets_ds_1.R
+ds_dynamic:
+  store: _ds_2
+  script: _targets_ds_2.R
+ds_static:
+  store: _ds_3
+  script: _targets_ds_3.R
+  reporter_make: verbose_positives # do not display skipped targets
+```
+
 ## One file, linear pipeline
 
-Using the 
+Using the original tsv from the package `datasauRus` itself. `targets` allows to track the timestamp of an URL.
+
+Here we track `https://raw.githubusercontent.com/jumpingrivers/datasauRus/main/inst/extdata/DatasaurusDozen-Long.tsv`.
+
+See the complete `targets` R script in `_targets_ds_1.R` and displayed dependencies as [directed acyclic graph](https://en.wikipedia.org/wiki/Directed_acyclic_graph):
 
 ![ds1](img/dag_linear.png)
+
+`targets` encourages using [literate programing](https://books.ropensci.org/targets/literate-programming.html) where 
+a **Rmarkdown** document higher level comments and code, dependencies are based on the parsing of the `tar_read()` and `tar_load()` calls within it. This can be used as smart caching system where help focusing on the analysis report, leaving the computation 
+for the R script `_targets.R`. 
+
+For this first example, the corresponding `Rmd` is `ds1.Rmd`. It will be rendered by the pipeline (target definition in `tar_render()`).
+
+To run this example:
+
+``` r
+# Specify which projet to use
+Sys.setenv(TAR_PROJECT = "ds_linear")
+# Run what is needed like make in a Makefile
+targets::tar_make()
+```
 
 ## One folder, dynamic branching
 
