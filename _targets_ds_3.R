@@ -28,7 +28,7 @@ mapped <- tar_map(
   # Patchwork each group into one plot
   tar_target(patch_plots, 
              wrap_plots(plots) + 
-               # Title the last bit of path_plots_{cicles,lines,others}
+               # Title the last bit of path_plots_{circles,lines,others}
                plot_annotation(title = stringr::str_split_i(tar_name(), '_', -1)),
              packages = "patchwork")
 )

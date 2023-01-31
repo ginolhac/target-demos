@@ -8,7 +8,7 @@ tar_option_set(packages = "tidyverse")
 list(
   # track if distant file has changed
   tar_url(ds_file, "https://raw.githubusercontent.com/jumpingrivers/datasauRus/main/inst/extdata/DatasaurusDozen-Long.tsv"),
-  tar_target(ds, read_tsv(ds_file)),
+  tar_target(ds, read_tsv(ds_file, show_col_types = FALSE)),
   tar_target(all_facets,
              ds |> 
                ggplot(aes(x = x, y = y, colour = dataset)) +

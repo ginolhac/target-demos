@@ -15,7 +15,7 @@ tar_option_set(packages = "tidyverse")
 list(
   # Reading multiple files
   # 1. track the different files
-  tar_files(dset, fs::dir_ls("data", glob = "*.tsv")),
+  tar_files_input(dset, fs::dir_ls("data", glob = "*.tsv")),
   # 2. read them using dynamic branching
   tar_target(ds, read_tsv(dset, show_col_types = FALSE),
              pattern = map(dset)),

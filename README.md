@@ -75,12 +75,17 @@ ds_static:
 
 ## Packages needed
 
-Those demos are using several packages, you can get the necessary ones by using [`renv`]()
+Those demos are using several packages, you can get the necessary ones by using [`renv`](https://rstudio.github.io/renv/articles/renv.html). Once the repo cloned/downloaded:
 
+``` r
+renv::restore()
+```
+
+to install a local library of the key packages.
 
 ## One file, linear pipeline
 
-Using the original tsv from the package `datasauRus` itself. `targets` allows to track the timestamp of an URL.
+Using the original `tsv` from the package `datasauRus` itself. `targets` allows to track the timestamp of an URL.
 
 Here we track `https://raw.githubusercontent.com/jumpingrivers/datasauRus/main/inst/extdata/DatasaurusDozen-Long.tsv`.
 
@@ -103,13 +108,91 @@ Sys.setenv(TAR_PROJECT = "ds_linear")
 targets::tar_make()
 ```
 
+For the first run, `tar_make()1 should output something like:
+
+```
+> targets::tar_make()
+• start target ds_file
+• built target ds_file [0.695 seconds]
+• start target ds
+• built target ds [0.176 seconds]
+• start target anim
+• built target anim [48.762 seconds]
+• start target all_facets
+• built target all_facets [0.007 seconds]
+• start target gif
+• built target gif [0.005 seconds]
+• start target report
+• built target report [4.144 seconds]
+• end pipeline [54.083 seconds]
+```
+
 The GIF animation takes roughly one minute, so it would be cumbersome to wait this time at each Rmarkdown knitting process.
 It is a good case for `targets`, the GIF will be re-run only if needed while you polish the Rmd report.
 
+See the output of re-reruning `tar_make()` again:
+
+```
+> targets::tar_make()
+✔ skip target ds_file
+✔ skip target ds
+✔ skip target anim
+✔ skip target all_facets
+✔ skip target gif
+✔ skip target report
+✔ skip pipeline [0.27 seconds]
+```
+
+0.27 seconds versus 54.
+
+
 ## One folder, dynamic branching
+
+Often, input files are more than one. Of course, you don't want to list them by hand 
+and one want to apply similar treatment to each of them. Moving away from **for loops**, 
+we embrace functional programming and let `targets` branching over the list of files and
+ dynamically for it adapts to how many are present.
+ 
+This is called [dynamic branching](https://books.ropensci.org/targets/dynamic.html) and it contains the _magic_ aggregation (like `bind_rows()`) when calling the target **name**.
 
 
 ![ds2](img/dag_dynamic.png)
+
+You see that all targets appears in blue, so outdated. This is the expected behavior of [`tar_files()`](https://docs.ropensci.org/tarchetypes/reference/tar_files.html). We don't know 
+in advance how many (if any) files are present, so the listing is checked all the time and downstream targets are then also outdated.
+
+However, the downstream targets are re-run only if needed
+
+- If input files _changed_
+- If code for those targets _changed_.
+
+See example of re-running `tar_make()`. `dset_files` was run again, but no files were different 
+so all the rest is **skipped** and the whole pipeline took 1.1 second.
+
+```
+> targets::tar_make()
+• start target dset_files
+• built target dset_files [0.702 seconds]
+✔ skip branch dset_6630d1f3
+✔ skip branch dset_f10c2c43
+✔ skip branch dset_c79e8ff6
+✔ skip branch dset_b1eac8ed
+[...]
+✔ skip branch plots_01ca2c35
+✔ skip branch plots_9fc19e45
+✔ skip branch plots_01f427e3
+✔ skip pattern plots
+✔ skip target report
+• end pipeline [1.172 seconds]
+```
+
+Dynamic branching scales great on the DAG since the number of branches can be reported, no additional items are created. 
+to avoid this, we can switch to  [`tar_files_input()`](https://docs.ropensci.org/tarchetypes/reference/tar_files_input.html) which 
+also _automatically groups input files into batches to reduce overhead and increase the efficiency of parallel processing._.
+
+See the DAG with `tar_files_input()`:
+
+![ds2](img/dag_dynamic_input.png)
 
 
 ## Several folders, dynamic within static branching
