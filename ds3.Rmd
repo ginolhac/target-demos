@@ -86,7 +86,7 @@ The chosen [**reporter**](https://docs.ropensci.org/targets/reference/tar_make.h
 • end pipeline [7.723 seconds]
 ```
 
-- **summary**, is anthoner compact option:
+- **summary**, is another compact option:
 
 ```
 queue | skip | start | built | error | warn | cancel |        time

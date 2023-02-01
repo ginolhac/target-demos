@@ -15,7 +15,11 @@ values <- tibble(
 mapped <- tar_map(
   values = values,
   names = "folders", # to avoid targets reporting "files_lines_lines"
-  tar_target(files, fs::dir_ls(folders, glob = "*tsv")),
+  tar_target(filenames, fs::dir_ls(folders, glob = "*tsv")),
+  # filenames is not of format file, no checksum is done
+  # we need a dynamic pattern at this step to read them dynamically too
+  tar_target(files, format = "file", filenames, 
+             pattern = map(filenames)),
   # Dynamic within static
   tar_target(ds, read_tsv(files, show_col_types = FALSE),
              pattern = map(files)),
@@ -37,14 +41,14 @@ mapped <- tar_map(
 # Each of one them is actually composed of 2, 4 and 7 tibbles
 stat_combined <- tar_combine(
   stat_summaries,
-  mapped[[3]], # Unfortunately, we need indices to tell which target to act on
+  mapped[[4]], # Unfortunately, we need indices to tell which target to act on
   # And a bit of metaprogramming, using triple bang (!!!) for force evaluation
   command = dplyr::bind_rows(!!!.x, .id = "ds_type")
 )
 # And the plots now
 plot_combined <- tar_combine(
   plots_agg,
-  mapped[[5]],
+  mapped[[6]],
   command = wrap_plots(list(!!!.x), ncol = 2) + plot_annotation(title = "Master Saurus"),
   packages = "patchwork"
 )
