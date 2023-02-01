@@ -41,14 +41,14 @@ mapped <- tar_map(
 # Each of one them is actually composed of 2, 4 and 7 tibbles
 stat_combined <- tar_combine(
   stat_summaries,
-  mapped[[4]], # Unfortunately, we need indices to tell which target to act on
+  mapped[["summary_stat"]],
   # And a bit of metaprogramming, using triple bang (!!!) for force evaluation
   command = dplyr::bind_rows(!!!.x, .id = "ds_type")
 )
 # And the plots now
 plot_combined <- tar_combine(
   plots_agg,
-  mapped[[6]],
+  mapped[["patch_plots"]],
   command = wrap_plots(list(!!!.x), ncol = 2) + plot_annotation(title = "Master Saurus"),
   packages = "patchwork"
 )
