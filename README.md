@@ -155,6 +155,51 @@ we embrace functional programming and let `targets` branching over the list of f
  
 This is called [dynamic branching](https://books.ropensci.org/targets/dynamic.html) and it contains the _magic_ aggregation (like `bind_rows()`) when calling the target **name**.
 
+On the filesystem, the folder `data` contains 13 files:
+
+```
+data/
+├── dset_10.tsv
+├── dset_11.tsv
+├── dset_12.tsv
+├── dset_13.tsv
+├── dset_1.tsv
+├── dset_2.tsv
+├── dset_3.tsv
+├── dset_4.tsv
+├── dset_5.tsv
+├── dset_6.tsv
+├── dset_7.tsv
+├── dset_8.tsv
+└── dset_9.tsv
+```
+
+Which once tracked by `targets` are:
+
+``` r
+> tar_read(dset) |> 
+    enframe()
+# A tibble: 13 × 2
+   name          value           
+   <chr>         <chr>           
+ 1 dset_e814d3a7 data/dset_1.tsv 
+ 2 dset_96886f69 data/dset_10.tsv
+ 3 dset_a4c9d9df data/dset_11.tsv
+ 4 dset_02e8e253 data/dset_12.tsv
+ 5 dset_39f18392 data/dset_13.tsv
+ 6 dset_d74af7a4 data/dset_2.tsv 
+ 7 dset_55280675 data/dset_3.tsv 
+ 8 dset_80822375 data/dset_4.tsv 
+ 9 dset_020f0640 data/dset_5.tsv 
+10 dset_0577d04d data/dset_6.tsv 
+11 dset_66982b15 data/dset_7.tsv 
+12 dset_3c9c9095 data/dset_8.tsv 
+13 dset_fe11a7b7 data/dset_9.tsv 
+```
+
+
+Finally, the DAG is:
+
 
 ![ds2](img/dag_dynamic.png)
 
@@ -197,5 +242,61 @@ See the DAG with `tar_files_input()`:
 
 ## Several folders, dynamic within static branching
 
+We created a folder structure as we often have to deal with, 3 sub-folders of data:
+
+```
+circles
+├── dset_2.tsv
+└── dset_3.tsv
+lines
+├── dset_11.tsv
+├── dset_12.tsv
+├── dset_13.tsv
+├── dset_6.tsv
+├── dset_7.tsv
+├── dset_8.tsv
+└── dset_9.tsv
+others
+├── dset_10.tsv
+├── dset_1.tsv
+├── dset_4.tsv
+└── dset_5.tsv
+```
+
+Especially with **static** branching, it is meaningful to check which commands are planned.
+See the **manifest** for this example:
+
+```
+> tar_manifest() |> print(n = Inf)
+# A tibble: 21 × 3
+   name                 command                                                                                                   pattern
+   <chr>                <chr>                                                                                                     <chr>  
+ 1 filenames_circles    "fs::dir_ls(\"circles\", glob = \"*tsv\")"                                                                NA     
+ 2 filenames_others     "fs::dir_ls(\"others\", glob = \"*tsv\")"                                                                 NA     
+ 3 filenames_lines      "fs::dir_ls(\"lines\", glob = \"*tsv\")"                                                                  NA     
+ 4 files_circles        "filenames_circles"                                                                                       map(fi…
+ 5 files_others         "filenames_others"                                                                                        map(fi…
+ 6 files_lines          "filenames_lines"                                                                                         map(fi…
+ 7 ds_circles           "read_tsv(files_circles, show_col_types = FALSE)"                                                         map(fi…
+ 8 ds_others            "read_tsv(files_others, show_col_types = FALSE)"                                                          map(fi…
+ 9 ds_lines             "read_tsv(files_lines, show_col_types = FALSE)"                                                           map(fi…
+10 summary_stat_circles "summarise(ds_circles, m_x = mean(x), m_y = mean(y))"                                                     map(ds…
+11 plots_circles        "ggplot(ds_circles, aes(x, y)) + geom_point()"                                                            map(ds…
+12 summary_stat_others  "summarise(ds_others, m_x = mean(x), m_y = mean(y))"                                                      map(ds…
+13 plots_others         "ggplot(ds_others, aes(x, y)) + geom_point()"                                                             map(ds…
+14 plots_lines          "ggplot(ds_lines, aes(x, y)) + geom_point()"                                                              map(ds…
+15 summary_stat_lines   "summarise(ds_lines, m_x = mean(x), m_y = mean(y))"                                                       map(ds…
+16 patch_plots_circles  "wrap_plots(plots_circles) + plot_annotation(title = stringr::str_split_i(tar_name(), \n     \"_\", -1))" NA     
+17 patch_plots_others   "wrap_plots(plots_others) + plot_annotation(title = stringr::str_split_i(tar_name(), \n     \"_\", -1))"  NA     
+18 patch_plots_lines    "wrap_plots(plots_lines) + plot_annotation(title = stringr::str_split_i(tar_name(), \n     \"_\", -1))"   NA     
+19 stat_summaries       "dplyr::bind_rows(summary_stat_lines = summary_stat_lines, \n     summary_stat_circles = summary_stat_ci… NA     
+20 plots_agg            "wrap_plots(list(patch_plots_lines = patch_plots_lines, \n     patch_plots_circles = patch_plots_circles… NA     
+21 report               "tarchetypes::tar_render_run(path = \"ds3.Rmd\", args = list(input = \"ds3.Rmd\", \n     knit_root_dir =… NA    
+```
+
+You see that we get meaningful names based on the 3 folders listed. Still we get dynamic branching for reading 
+files inside each folder. The same treatment is performed on each 3 input folders but 
+when we want/need to combine the parallel branches for a relevant aggregation, we use `tar_combine()`.
+Example of both aggregating tibbles or plots are exemplified as depicted below:
 
 ![ds3](img/dag_static.png)

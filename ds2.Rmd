@@ -22,7 +22,26 @@ Sys.setenv(TAR_PROJECT = "ds_dynamic")
 
 13 tabulated-separated-values to read from one folder `data`:
 
-```{r}
+```
+data
+├── dset_10.tsv
+├── dset_11.tsv
+├── dset_12.tsv
+├── dset_13.tsv
+├── dset_1.tsv
+├── dset_2.tsv
+├── dset_3.tsv
+├── dset_4.tsv
+├── dset_5.tsv
+├── dset_6.tsv
+├── dset_7.tsv
+├── dset_8.tsv
+└── dset_9.tsv
+```
+
+that leads in `targets` to:
+
+```{r paged.print=FALSE}
 tar_read(dset) |> 
   enframe()
 ```
