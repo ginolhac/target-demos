@@ -469,6 +469,22 @@
       "Hash": "15e9634c0fcd294799e9b2e929ed1b86",
       "Requirements": []
     },
+    "gganimate": {
+      "Package": "gganimate",
+      "Version": "1.0.8",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "8e627464910e6bcf6ccb62b0bdbffa35",
+      "Requirements": [
+        "ggplot2",
+        "glue",
+        "progress",
+        "rlang",
+        "scales",
+        "stringi",
+        "tweenr"
+      ]
+    },
     "ggplot2": {
       "Package": "ggplot2",
       "Version": "3.4.0",
@@ -489,6 +505,14 @@
         "vctrs",
         "withr"
       ]
+    },
+    "gifski": {
+      "Package": "gifski",
+      "Version": "1.6.6-1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "32cfcc7a7a72484e5857645df33ac077",
+      "Requirements": []
     },
     "globals": {
       "Package": "globals",
@@ -1319,6 +1343,20 @@
       "Hash": "facc02f3d63ed7dd765513c004c394ce",
       "Requirements": [
         "xfun"
+      ]
+    },
+    "tweenr": {
+      "Package": "tweenr",
+      "Version": "2.0.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "c16efcef4c72d3bff5e65031f3f1f841",
+      "Requirements": [
+        "cpp11",
+        "farver",
+        "magrittr",
+        "rlang",
+        "vctrs"
       ]
     },
     "tzdb": {
