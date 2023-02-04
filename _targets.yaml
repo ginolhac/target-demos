@@ -1,6 +1,9 @@
 ds_linear:
   store: _ds_1
   script: _targets_ds_1.R
+ds_fun_linear:
+  store: _ds_fun1
+  script: _targets_ds_fun1.R
 ds_dynamic:
   store: _ds_2
   script: _targets_ds_2.R
