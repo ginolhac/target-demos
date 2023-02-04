@@ -41,9 +41,10 @@ The great package [`datasauRus`](https://jumpingrivers.github.io/datasauRus/) of
 # … with 1,836 more rows
 ```
 
-For each the 3 demos, we use different versions of the same data:
+For each the 4 demos, we use different versions of the same data:
 
 - One tabulated-separated-value (tsv) file of 1847 lines (1846 observations + 1 header)
+- Same as before but with plotting functions in a separate R script
 - One folder that contains 13 tsv of 143 lines 
 - Three folders of 2, 4 and 7 tsv of 143 lines each
 
@@ -51,7 +52,7 @@ For each the 3 demos, we use different versions of the same data:
 ## Multiple projects in one folder
 
 This is supported by `targets` and described in the [manual: projects](https://books.ropensci.org/targets/projects.html).
-A config YAML file, `_targets.yaml` describe the 3 different projects, specifying the name of both:
+A config YAML file, `_targets.yaml` describe the 4 different projects, specifying the name of both:
 
 - the `targets` R script (actual definition of `target`)
 - the store folder name (where objects are cached and described)
@@ -64,6 +65,9 @@ Content:
 ds_linear:
   store: _ds_1
   script: _targets_ds_1.R
+ds_fun_linear:
+  store: _ds_fun1
+  script: _targets_ds_fun1.R
 ds_dynamic:
   store: _ds_2
   script: _targets_ds_2.R
@@ -145,6 +149,32 @@ See the output of re-reruning `tar_make()` again:
 
 0.27 seconds versus 54.
 
+
+## Cleaner coding with sourcing functions
+
+`_targets_ds_fun1.R` is similar as `_targets_ds_1.R` except that 
+plotting functions were placed in `R/plotting.R` which is sourced before the 
+targets definition
+
+Targets definition is then cleaner to read:
+
+``` r
+list(
+  # track if distant file has changed
+  tar_url(ds_file, "https://raw.githubusercontent.com/jumpingrivers/datasauRus/main/inst/extdata/DatasaurusDozen-Long.tsv"),
+  tar_target(ds, read_tsv(ds_file, show_col_types = FALSE)),
+  tar_target(all_facets, facet_ds(ds)),
+  # animation is worth caching  ~ 1 min
+  tar_target(anim, anim_ds(ds), 
+             packages = c("ggplot2", "gganimate", "gifski")),
+  tar_file(gif, {
+    anim_save("ds.gif", animation = anim, title_frame = TRUE)
+    # anim_save returns NULL, we need to get the file output path
+    "ds.gif"},
+             packages = c("gganimate")),
+  tar_render(report, "ds1.Rmd")
+)
+```
 
 ## One folder, dynamic branching
 

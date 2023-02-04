@@ -22,5 +22,5 @@ list(
 )
 
 
-# Sys.setenv(TAR_PROJECT = "ds_linear")
+# Sys.setenv(TAR_PROJECT = "ds_fun_linear")
 # targets::tar_make()
