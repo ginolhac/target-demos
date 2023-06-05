@@ -13,7 +13,8 @@ list(
              ds |> 
                ggplot(aes(x = x, y = y, colour = dataset)) +
                geom_point() +
-               facet_wrap(~ dataset, ncol = 3)),
+               # 4 is better
+               facet_wrap(~ dataset, ncol = 4)),
   # animation is worth caching  ~ 1 min
   tar_target(anim, {
     ds |> 

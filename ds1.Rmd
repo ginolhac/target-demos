@@ -11,6 +11,7 @@ date: "7th February 2023"
 #| include: false
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(datasauRus)
 library(targets)
 # We specify we will use the project ds_linear which 
 # correspond to the target file: _targets_ds_1.R and store `_ds_1/` (config: `_targets.yaml`)
