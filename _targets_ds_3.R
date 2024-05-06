@@ -50,10 +50,11 @@ plot_combined <- tar_combine(
   plots_agg,
   mapped[["patch_plots"]],
   command = wrap_plots(list(!!!.x), ncol = 2) + plot_annotation(title = "Master Saurus"),
-  packages = "patchwork"
+  packages = "patchwork",
+  description = "Key step to wrap plots"
 )
 
-list(mapped, stat_combined, plot_combined, tar_render(report, "ds3.Rmd"))
+list(mapped, stat_combined, plot_combined, tar_quarto(report, "ds3.qmd", description = "Rendering quarto doc"))
 
 
 # Sys.setenv(TAR_PROJECT = "ds_static")

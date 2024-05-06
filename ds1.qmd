@@ -1,15 +1,14 @@
 ---
 title: "Datasaurus, one file"
-output: 
-  html_document:
+format:
+  html:
     theme: cosmo
-date: "7th February 2023"
+date: today
 ---
 
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(datasauRus)
 library(targets)
@@ -38,9 +37,9 @@ ds
 
 
 ```{r}
-ds |> 
-  group_by(dataset) |>
-  summarise(across(c(x, y), list(mean = mean, sd = sd)))
+summarise(ds, 
+          across(c(x, y), list(mean = mean, sd = sd)),
+          .by = dataset)
 ```
 
 

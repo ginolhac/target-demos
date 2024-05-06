@@ -6,5 +6,6 @@
 *.html
 *.gif
 /_*/
+/*_files/
 /renv/
 /.Rprofile

@@ -3,7 +3,7 @@ facet_ds <- function(.data) {
   .data |> 
     ggplot(aes(x = x, y = y, colour = dataset)) +
     geom_point() +
-    facet_wrap(~ dataset, ncol = 3)
+    facet_wrap(vars(dataset), ncol = 4)
 }
 
 anim_ds <- function(.data) {

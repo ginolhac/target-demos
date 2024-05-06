@@ -1,15 +1,14 @@
 ---
 title: "Datasaurus, static and dynamic branching"
-output: 
-  html_document:
+format: 
+  html:
     theme: cosmo
-date: "7th February 2023"
+date: today
 ---
 
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(targets)
 Sys.setenv(TAR_PROJECT = "ds_static")
@@ -21,7 +20,7 @@ Sys.setenv(TAR_PROJECT = "ds_static")
 
 We created a folder structure as we often have to deal with, 3 sub-folders of data:
 
-```
+``` default
 circles
 ├── dset_2.tsv
 └── dset_3.tsv
@@ -55,42 +54,40 @@ tar_manifest() |>
 ```
 
 
-For this last demo, we chose to have a less verbose `tar_make()`: **verbose_positives**, _i. e_ show only what is re-reun. 
+For this last demo, we chose to have a less verbose `tar_make()`: **verbose_positives**, _i. e_ show only what is re-run. 
 The chosen [**reporter**](https://docs.ropensci.org/targets/reference/tar_make.html) by default shows all targets, for example:
 
 
-```
-✔ skip target files_circles
-✔ skip target files_others
-✔ skip target files_lines
-✔ skip branch ds_circles_a21af8f2
-✔ skip branch ds_circles_cc1c954b
+``` default
+✔ skipped target filenames_circles
+✔ skipped target filenames_others
+✔ skipped target filenames_lines
+✔ skipped branch files_circles_9a8e66ae2f7cb722
+✔ skipped branch files_circles_e0bacc914d455d5b
 [...]
-✔ skip branch summary_stat_lines_4f09e3f8
-✔ skip pattern summary_stat_lines
-✔ skip target patch_plots_circles
-✔ skip target patch_plots_others
-✔ skip target patch_plots_lines
-✔ skip target stat_summaries
-✔ skip target plots_agg
-✔ skip target report
-✔ skip pipeline [0.399 seconds]
+✔ skipped target patch_plots_circles
+✔ skipped target patch_plots_others
+✔ skipped target patch_plots_lines
+✔ skipped target stat_summaries
+✔ skipped target plots_agg
+✔ skipped target report
+✔ skipped pipeline [0.467 seconds]
 ```
 
 - In contrast, **verbose_positives** would display for re-running only the `report`:
 
-```
+``` default
 > tar_make()
-• start target report
-• built target report [6.471 seconds]
-• end pipeline [7.723 seconds]
+▶ dispatched target report
+● completed target report [15.379 seconds]
+▶ ended pipeline [16.775 seconds]
 ```
 
 - **summary**, is another compact option:
 
-```
-queue | skip | start | built | error | warn | cancel |        time
-    0 |   48 |     0 |     0 |     0 |    0 |      0 | 14:40 08.52 
+``` default
+queued | skipped | dispatched | completed | errored | warned | canceled | time       
+0      | 60      | 1          | 0         | 0       | 0      | 0        | 11:04 32.91
 ```
 
 

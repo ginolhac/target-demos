@@ -26,7 +26,7 @@ list(
                labs(title = unique(ds$dataset)),
              pattern = map(ds),
              iteration = "list"),
-  tar_render(report, "ds2.Rmd")
+  tar_quarto(report, "ds2.qmd")
 )
 
 

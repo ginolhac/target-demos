@@ -18,7 +18,7 @@ list(
     # anim_save returns NULL, we need to get the file output path
     "ds.gif"},
              packages = c("gganimate")),
-  tar_render(report, "ds1.Rmd")
+  tar_quarto(report, "ds1.qmd")
 )
 
 
