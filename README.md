@@ -1,5 +1,8 @@
 # Targets demos
 
+Companion repository of the [presentation](https://github.com/ginolhac/porg-targets)
+
+
 ## A workflow manager
 
 [**Targets**](https://github.com/ropensci/targets) is an **R** package that is
@@ -19,7 +22,9 @@ Invalidation of a `target` arises when:
 - Code of the targets changed
 - Package used was updated
 
-## Example dataset: datasauRus ![](https://jumpingrivers.github.io/datasauRus/logo.png){height=100}
+## Example dataset: datasauRus
+
+ ![](https://jumpingrivers.github.io/datasauRus/logo.png)
 
 The great package [`datasauRus`](https://jumpingrivers.github.io/datasauRus/) offers a fake table which
  consists of 13 dataset (each of 142 observations) with 2 values `x` and `y`:
@@ -98,7 +103,7 @@ See the complete `targets` R script in `_targets_ds_1.R` and displayed dependenc
 ![ds1](img/dag_linear.png)
 
 `targets` encourages using [literate programing](https://books.ropensci.org/targets/literate-programming.html) where 
-a **Rmarkdown** document higher level comments and code, dependencies are based on the parsing of the `tar_read()` and `tar_load()` calls within it. This can be used as smart caching system where help focusing on the analysis report, leaving the computation 
+a **Quarto/Rmarkdown** document higher level comments and code, dependencies are based on the parsing of the `tar_read()` and `tar_load()` calls within it. This can be used as smart caching system where help focusing on the analysis report, leaving the computation 
 for the R script `_targets.R`. 
 
 For this first example, the corresponding `Rmd` is `ds1.Rmd`. It will be rendered by the pipeline (target definition in `tar_render()`).
@@ -112,7 +117,7 @@ Sys.setenv(TAR_PROJECT = "ds_linear")
 targets::tar_make()
 ```
 
-For the first run, `tar_make()1 should output something like:
+For the first run, `tar_make()` should output something like:
 
 ```
 > targets::tar_make()
@@ -330,3 +335,4 @@ when we want/need to combine the parallel branches for a relevant aggregation, w
 Example of both aggregating tibbles or plots are exemplified as depicted below:
 
 ![ds3](img/dag_static.png)
+
