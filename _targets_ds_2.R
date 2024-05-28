@@ -5,6 +5,8 @@ library(tarchetypes)
 # which each runs in a fresh R session
 tar_option_set(packages = "tidyverse")
 
+message("dynamic branching")
+
 # Create fake files from datasaurus, one per dataset with:
 # purrr::iwalk(
 #   group_split(datasauRus::datasaurus_dozen, dataset),

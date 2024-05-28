@@ -5,6 +5,8 @@ library(tarchetypes) # for tar_url() and tar_render()
 # which each runs in a fresh R session
 tar_option_set(packages = "tidyverse")
 
+message("No branching")
+
 list(
   # track if distant file has changed
   tar_url(ds_file, "https://raw.githubusercontent.com/jumpingrivers/datasauRus/main/inst/extdata/DatasaurusDozen-Long.tsv"),

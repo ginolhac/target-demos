@@ -11,4 +11,7 @@ ds_static:
   store: _ds_3
   script: _targets_ds_3.R
   reporter_make: verbose_positives # do not display skipped targets
-  
+ds_nested_static:
+  store: _ds_4
+  script: _targets_ds_4.R
+  reporter_make: verbose_positives # do not display skipped targets

@@ -1,9 +1,11 @@
 library(targets)
 library(tarchetypes) # for tar_url() and tar_render()
-source("R/plotting.R")
+tar_source() # equivalent to source("R/*.R")
 # load the tidyverse quietly for each target
 # which each runs in a fresh R session
 tar_option_set(packages = "tidyverse")
+
+message("No branching with sourcing")
 
 list(
   # track if distant file has changed

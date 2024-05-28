@@ -6,15 +6,20 @@ library(tibble) # for the values object
 # which each runs in a fresh R session
 tar_option_set(packages = "tidyverse")
 
+message("Static branching")
+
 # Static branching with dynamic branching inside
+
+# a folder for the subfolders and 
 values <- tibble(
-  folders = c("lines", "circles", "others")
+  folders = c("data/lines", "data/circles", "data/others"),
+  names =  fs::path_file(folders) # -> c("lines", "circles", "others")
 )
 
 # tar_map() generates R expressions, and substitute the desired 'values'
 mapped <- tar_map(
   values = values,
-  names = "folders", # to avoid targets reporting "files_lines_lines"
+  names = "names", # to avoid targets reporting "files_data.lines"
   tar_target(filenames, fs::dir_ls(folders, glob = "*tsv")),
   # filenames is not of format file, no checksum is done
   # we need a dynamic pattern at this step to read them dynamically too

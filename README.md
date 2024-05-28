@@ -336,3 +336,9 @@ Example of both aggregating tibbles or plots are exemplified as depicted below:
 
 ![ds3](img/dag_static.png)
 
+## Several folders, full static branching with nesting
+
+Here we need to know everything in advance. But we gain full controls on the `targets` **names**. 
+
+
+![ds4](img/dag_full_static.png)

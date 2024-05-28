@@ -14,7 +14,7 @@ library(datasauRus)
 library(targets)
 # We specify we will use the project ds_linear which 
 # correspond to the target file: _targets_ds_1.R and store `_ds_1/` (config: `_targets.yaml`)
-Sys.setenv(TAR_PROJECT = "ds_linear")
+Sys.setenv(TAR_PROJECT = "ds_fun_linear")
 ```
 
 ## Literate programming using targets
