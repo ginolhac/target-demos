@@ -106,7 +106,7 @@ See the complete `targets` R script in `_targets_ds_1.R` and displayed dependenc
 a **Quarto/Rmarkdown** document higher level comments and code, dependencies are based on the parsing of the `tar_read()` and `tar_load()` calls within it. This can be used as smart caching system where help focusing on the analysis report, leaving the computation 
 for the R script `_targets.R`. 
 
-For this first example, the corresponding `Rmd` is `ds1.Rmd`. It will be rendered by the pipeline (target definition in `tar_render()`).
+For this first example, the corresponding `qmd` is `ds1.qmd`. It will be rendered by the pipeline (target definition in `tar_quarto()`).
 
 To run this example:
 
@@ -121,38 +121,40 @@ For the first run, `tar_make()` should output something like:
 
 ```
 > targets::tar_make()
-• start target ds_file
-• built target ds_file [0.695 seconds]
-• start target ds
-• built target ds [0.176 seconds]
-• start target anim
-• built target anim [48.762 seconds]
-• start target all_facets
-• built target all_facets [0.007 seconds]
-• start target gif
-• built target gif [0.005 seconds]
-• start target report
-• built target report [4.144 seconds]
-• end pipeline [54.083 seconds]
+No branching
+▶ dispatched target ds_file
+● completed target ds_file [0.641 seconds]
+▶ dispatched target ds
+● completed target ds [0.162 seconds]
+▶ dispatched target anim
+● completed target anim [45.765 seconds]
+▶ dispatched target all_facets
+● completed target all_facets [0.015 seconds]
+▶ dispatched target gif
+● completed target gif [0.005 seconds]
+▶ dispatched target report
+● completed target report [10.696 seconds]
+▶ ended pipeline [57.85 seconds]
 ```
 
-The GIF animation takes roughly one minute, so it would be cumbersome to wait this time at each Rmarkdown knitting process.
-It is a good case for `targets`, the GIF will be re-run only if needed while you polish the Rmd report.
+The GIF animation takes roughly one minute, so it would be cumbersome to wait this time at each Quarto rendering process.
+It is a good case for `targets`, the GIF will be re-run only if needed while you polish the **qmd** report.
 
-See the output of re-reruning `tar_make()` again:
+See the output of re-running `tar_make()` again:
 
 ```
 > targets::tar_make()
-✔ skip target ds_file
-✔ skip target ds
-✔ skip target anim
-✔ skip target all_facets
-✔ skip target gif
-✔ skip target report
-✔ skip pipeline [0.27 seconds]
+No branching
+✔ skipped target ds_file
+✔ skipped target ds
+✔ skipped target anim
+✔ skipped target all_facets
+✔ skipped target gif
+✔ skipped target report
+✔ skipped pipeline [0.414 seconds]
 ```
 
-0.27 seconds versus 54.
+0.4 seconds versus 58.
 
 
 ## Cleaner coding with sourcing functions
@@ -177,7 +179,7 @@ list(
     # anim_save returns NULL, we need to get the file output path
     "ds.gif"},
              packages = c("gganimate")),
-  tar_render(report, "ds1.Rmd")
+  tar_quarto(report, "ds1.qmd")
 )
 ```
 
@@ -251,19 +253,18 @@ so all the rest is **skipped** and the whole pipeline took 1.1 second.
 
 ```
 > targets::tar_make()
-• start target dset_files
-• built target dset_files [0.702 seconds]
-✔ skip branch dset_6630d1f3
-✔ skip branch dset_f10c2c43
-✔ skip branch dset_c79e8ff6
-✔ skip branch dset_b1eac8ed
+dynamic branching
+✔ skipped target dset_files
+✔ skipped branch dset_9133001920689961
+✔ skipped branch dset_4726761ce195efe1
+✔ skipped branch dset_3061417a2e0ca38
 [...]
-✔ skip branch plots_01ca2c35
-✔ skip branch plots_9fc19e45
-✔ skip branch plots_01f427e3
-✔ skip pattern plots
-✔ skip target report
-• end pipeline [1.172 seconds]
+✔ skipped branch plots_02b61b1dea28aeac
+✔ skipped branch plots_f07e49609d784901
+✔ skipped branch plots_e5e7c0dac500f132
+✔ skipped pattern plots
+✔ skipped target report
+✔ skipped pipeline [0.333 seconds]
 ```
 
 Dynamic branching scales great on the DAG since the number of branches can be reported, no additional items are created. 
@@ -277,25 +278,26 @@ See the DAG with `tar_files_input()`:
 
 ## Several folders, dynamic within static branching
 
-We created a folder structure as we often have to deal with, 3 sub-folders of data:
+We created a sub-folder structure as we often have to deal with, 3 sub-folders of data:
 
 ```
-circles
-├── dset_2.tsv
-└── dset_3.tsv
-lines
-├── dset_11.tsv
-├── dset_12.tsv
-├── dset_13.tsv
-├── dset_6.tsv
-├── dset_7.tsv
-├── dset_8.tsv
-└── dset_9.tsv
-others
-├── dset_10.tsv
-├── dset_1.tsv
-├── dset_4.tsv
-└── dset_5.tsv
+data
+├── circles
+│   ├── dset_1.tsv
+│   └── dset_2.tsv
+├── lines
+│   ├── dset_1.tsv
+│   ├── dset_2.tsv
+│   ├── dset_3.tsv
+│   ├── dset_4.tsv
+│   ├── dset_5.tsv
+│   ├── dset_6.tsv
+│   └── dset_7.tsv
+└── others
+    ├── dset_1.tsv
+    ├── dset_2.tsv
+    ├── dset_3.tsv
+    └── dset_4.tsv
 ```
 
 Especially with **static** branching, it is meaningful to check which commands are planned.
@@ -303,30 +305,31 @@ See the **manifest** for this example:
 
 ```
 > tar_manifest() |> print(n = Inf)
-# A tibble: 21 × 3
-   name                 command                                                                                                   pattern
-   <chr>                <chr>                                                                                                     <chr>  
- 1 filenames_circles    "fs::dir_ls(\"circles\", glob = \"*tsv\")"                                                                NA     
- 2 filenames_others     "fs::dir_ls(\"others\", glob = \"*tsv\")"                                                                 NA     
- 3 filenames_lines      "fs::dir_ls(\"lines\", glob = \"*tsv\")"                                                                  NA     
- 4 files_circles        "filenames_circles"                                                                                       map(fi…
- 5 files_others         "filenames_others"                                                                                        map(fi…
- 6 files_lines          "filenames_lines"                                                                                         map(fi…
- 7 ds_circles           "read_tsv(files_circles, show_col_types = FALSE)"                                                         map(fi…
- 8 ds_others            "read_tsv(files_others, show_col_types = FALSE)"                                                          map(fi…
- 9 ds_lines             "read_tsv(files_lines, show_col_types = FALSE)"                                                           map(fi…
-10 summary_stat_circles "summarise(ds_circles, m_x = mean(x), m_y = mean(y))"                                                     map(ds…
-11 plots_circles        "ggplot(ds_circles, aes(x, y)) + geom_point()"                                                            map(ds…
-12 summary_stat_others  "summarise(ds_others, m_x = mean(x), m_y = mean(y))"                                                      map(ds…
-13 plots_others         "ggplot(ds_others, aes(x, y)) + geom_point()"                                                             map(ds…
-14 plots_lines          "ggplot(ds_lines, aes(x, y)) + geom_point()"                                                              map(ds…
-15 summary_stat_lines   "summarise(ds_lines, m_x = mean(x), m_y = mean(y))"                                                       map(ds…
-16 patch_plots_circles  "wrap_plots(plots_circles) + plot_annotation(title = stringr::str_split_i(tar_name(), \n     \"_\", -1))" NA     
-17 patch_plots_others   "wrap_plots(plots_others) + plot_annotation(title = stringr::str_split_i(tar_name(), \n     \"_\", -1))"  NA     
-18 patch_plots_lines    "wrap_plots(plots_lines) + plot_annotation(title = stringr::str_split_i(tar_name(), \n     \"_\", -1))"   NA     
-19 stat_summaries       "dplyr::bind_rows(summary_stat_lines = summary_stat_lines, \n     summary_stat_circles = summary_stat_ci… NA     
-20 plots_agg            "wrap_plots(list(patch_plots_lines = patch_plots_lines, \n     patch_plots_circles = patch_plots_circles… NA     
-21 report               "tarchetypes::tar_render_run(path = \"ds3.Rmd\", args = list(input = \"ds3.Rmd\", \n     knit_root_dir =… NA    
+Static branching
+# A tibble: 21 × 4
+   name                 command                                                                                                          pattern description
+   <chr>                <chr>                                                                                                            <chr>   <chr>      
+ 1 filenames_circles    "fs::dir_ls(\"data/circles\", glob = \"*tsv\")"                                                                  NA      data/circl…
+ 2 filenames_others     "fs::dir_ls(\"data/others\", glob = \"*tsv\")"                                                                   NA      data/other…
+ 3 filenames_lines      "fs::dir_ls(\"data/lines\", glob = \"*tsv\")"                                                                    NA      data/lines…
+ 4 files_circles        "filenames_circles"                                                                                              map(fi… data/circl…
+ 5 files_others         "filenames_others"                                                                                               map(fi… data/other…
+ 6 files_lines          "filenames_lines"                                                                                                map(fi… data/lines…
+ 7 ds_circles           "read_tsv(files_circles, show_col_types = FALSE)"                                                                map(fi… data/circl…
+ 8 ds_others            "read_tsv(files_others, show_col_types = FALSE)"                                                                 map(fi… data/other…
+ 9 ds_lines             "read_tsv(files_lines, show_col_types = FALSE)"                                                                  map(fi… data/lines…
+10 summary_stat_circles "summarise(ds_circles, m_x = mean(x), m_y = mean(y))"                                                            map(ds… data/circl…
+11 plots_circles        "ggplot(ds_circles, aes(x, y)) + geom_point()"                                                                   map(ds… data/circl…
+12 summary_stat_others  "summarise(ds_others, m_x = mean(x), m_y = mean(y))"                                                             map(ds… data/other…
+13 plots_others         "ggplot(ds_others, aes(x, y)) + geom_point()"                                                                    map(ds… data/other…
+14 plots_lines          "ggplot(ds_lines, aes(x, y)) + geom_point()"                                                                     map(ds… data/lines…
+15 summary_stat_lines   "summarise(ds_lines, m_x = mean(x), m_y = mean(y))"                                                              map(ds… data/lines…
+16 patch_plots_circles  "wrap_plots(plots_circles) + plot_annotation(title = stringr::str_split_i(tar_name(), \n     \"_\", -1))"        NA      data/circl…
+17 patch_plots_others   "wrap_plots(plots_others) + plot_annotation(title = stringr::str_split_i(tar_name(), \n     \"_\", -1))"         NA      data/other…
+18 patch_plots_lines    "wrap_plots(plots_lines) + plot_annotation(title = stringr::str_split_i(tar_name(), \n     \"_\", -1))"          NA      data/lines…
+19 stat_summaries       "dplyr::bind_rows(summary_stat_lines = summary_stat_lines, \n     summary_stat_circles = summary_stat_circles, … NA      NA         
+20 plots_agg            "wrap_plots(list(patch_plots_lines = patch_plots_lines, \n     patch_plots_circles = patch_plots_circles, patch… NA      Key step t…
+21 report               "tarchetypes::tar_quarto_run(args = list(input = \"ds3.qmd\", \n     execute = TRUE, execute_params = list(), e… NA      Rendering …
 ```
 
 You see that we get meaningful names based on the 3 folders listed. Still we get dynamic branching for reading 
